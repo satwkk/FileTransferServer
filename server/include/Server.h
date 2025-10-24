@@ -4,6 +4,10 @@
 #include "Client.h"
 #include "Pool/WorkerPool.h"
 
+struct ServerContext 
+{
+};
+
 class Server 
 {
 public:
@@ -15,9 +19,6 @@ public:
 
 public:
     void Run();
-
-private:
-    void HandleClient(const Client& client);
 
 private:
     std::string m_Host;

@@ -13,7 +13,6 @@ public:
     virtual void Execute() const;
     const CommandType GetType() const { return m_Type; }
 
-private:
 protected:
     Command() = default;
     Command(CommandType type, int fd);

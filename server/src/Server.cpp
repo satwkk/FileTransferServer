@@ -9,10 +9,10 @@
 #include <unistd.h>
 
 Server::Server(const std::string& host, int port)
-: m_Port(port)
-, m_Host(host)
-, m_IsRunning(false)
-, m_WorkerPool(5)
+    : m_Port(port)
+    , m_Host(host)
+    , m_IsRunning(false)
+    , m_WorkerPool(5)
 {
     m_SocketDescriptor = socket(AF_INET, SOCK_STREAM, 0);
     Check(m_SocketDescriptor != -1, "Failed to create socket");
@@ -50,23 +50,5 @@ void Server::Run()
 
         std::printf("[SUCCESS]: Client connected from %s:%d\n", inet_ntoa(clientSocket.sin_addr), ntohs(clientSocket.sin_port));
         m_WorkerPool.AddClient(Client(clientSocketDescriptor, clientSocket));
-    }
-}
-
-void Server::HandleClient(const Client& client)
-{
-    m_ClientHandles.emplace_back(client);
-    send(client.SocketDescriptor, SERVER_WELCOME_MESSAGE.c_str(), SERVER_WELCOME_MESSAGE.size(), 0);
-    while (true) 
-    {
-        std::vector<char> buffer(1024);
-        uint32_t bytesReceived = recv(client.SocketDescriptor, buffer.data(), buffer.size(), 0);
-        std::string message(buffer.data(), bytesReceived);
-        message.erase(message.find_last_not_of("\n\r") + 1);
-
-        if (bytesReceived > 0) 
-        {
-            std::printf("[RECEIVED]: %s : Size: %d\n", message.c_str(), bytesReceived);
-        }
     }
 }
