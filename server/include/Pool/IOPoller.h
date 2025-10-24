@@ -1,0 +1,26 @@
+#pragma once
+
+#include <poll.h>
+#include <functional>
+#include <vector>
+#include "Client.h"
+
+class IOPoller
+{
+public:
+    IOPoller() = default;
+    ~IOPoller() = default;
+
+    void AddDescriptor(const Client& client);
+    void Poll();
+    void BindRecieveCallback(std::function<void(int, const std::string&)> callback);
+    void BindDisconnectCallback(std::function<void(int)> callback);
+
+private:
+    void RemoveDescriptor(int socketDescriptor);
+
+private:
+    std::vector<struct pollfd> m_PollDescriptors;
+    std::function<void(int)> m_DisconnectCallback;
+    std::function<void(int, const std::string&)> m_RecieveCallback;
+};
