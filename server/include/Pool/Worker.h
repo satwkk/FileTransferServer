@@ -5,6 +5,7 @@
 #include <poll.h>
 #include "Client.h"
 #include "IOPoller.h"
+#include "Containers/EasyArray.h"
 
 class Worker 
 {
@@ -17,7 +18,7 @@ public:
     void Update();
     void AddClient(const Client& client);
 
-    uint32_t GetNumConnectedClients() const { return m_ConnectedClients.size(); }
+    uint32_t GetNumConnectedClients() const { return m_ConnectedClients.GetSize(); }
     uint32_t GetPoolIndex() const { return m_PoolIndex; }
 
 private:
@@ -27,6 +28,7 @@ private:
 private:
     std::thread m_Thread;
     uint32_t m_PoolIndex;
-    std::vector<Client> m_ConnectedClients;
+    EasyArray<Client> m_ConnectedClients;
+    EasyArray<struct pollfd> m_FileDescriptors;
     IOPoller m_Poller;
 };

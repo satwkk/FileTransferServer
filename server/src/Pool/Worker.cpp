@@ -20,23 +20,29 @@ void Worker::Cleanup()
     {
         close(client.SocketDescriptor);
     }
-    m_ConnectedClients.clear();
+    m_ConnectedClients.Empty();
 }
 
 void Worker::AddClient(const Client &client)
 {
-    m_ConnectedClients.emplace_back(std::move(client));
-    m_Poller.AddDescriptor(client);
+    m_ConnectedClients.Add(client);
+    m_FileDescriptors.Add({client.SocketDescriptor, POLLIN, 0});
     SocketIO::SendMessage(client.SocketDescriptor, SERVER_WELCOME_MESSAGE);
-    std::printf("Worker %d: New client added. Total clients: %lu\n", m_PoolIndex, m_ConnectedClients.size());
+    std::printf("Worker %d: New client added. Total clients: %d\n", m_PoolIndex, m_ConnectedClients.GetSize());
 }
 
 void Worker::OnClientDisconnected(int socketDescriptor)
 {
     std::printf("Worker disconnected on fd: %d\n", socketDescriptor);
-    m_ConnectedClients.erase(std::remove_if(m_ConnectedClients.begin(), m_ConnectedClients.end(), [socketDescriptor](const Client& client) {
+    close(socketDescriptor);
+
+    m_ConnectedClients.Remove([socketDescriptor](const Client& client) {
         return client.SocketDescriptor == socketDescriptor;
-    }), m_ConnectedClients.end());
+    });
+
+    m_FileDescriptors.Remove([socketDescriptor](const pollfd& fd) {
+        return fd.fd == socketDescriptor;
+    });
 }
 
 void Worker::OnRecieveCommand(int socketDescriptor, const std::string &command)
@@ -48,7 +54,6 @@ void Worker::Update()
 {
     while (true)
     {
-        m_Poller.Poll();
+        m_Poller.Poll(m_FileDescriptors.GetContainer());
     }
-
 }

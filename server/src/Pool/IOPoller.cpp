@@ -3,15 +3,10 @@
 #include "Command.h"
 #include "SocketIO.h"
 
-void IOPoller::AddDescriptor(const Client &client)
+void IOPoller::Poll(std::vector<struct pollfd>& descriptors)
 {
-    m_PollDescriptors.push_back({client.SocketDescriptor, POLLIN, 0});
-}
-
-void IOPoller::Poll()
-{
-    int result = poll(m_PollDescriptors.data(), m_PollDescriptors.size(), 2000);
-    for (const auto& fd : m_PollDescriptors) 
+    int result = poll(descriptors.data(), descriptors.size(), 2000);
+    for (const auto& fd : descriptors) 
     {
         if (fd.revents & POLLIN)
         {
@@ -23,8 +18,6 @@ void IOPoller::Poll()
             }
             else if ((message.size() == 0) || (message.size() < 0 && (errno != EWOULDBLOCK && errno != EAGAIN))) 
             {
-                close(fd.fd);
-                RemoveDescriptor(fd.fd);
                 m_DisconnectCallback(fd.fd);
             }
         }
@@ -39,15 +32,4 @@ void IOPoller::BindRecieveCallback(std::function<void(int, const std::string &)>
 void IOPoller::BindDisconnectCallback(std::function<void(int)> callback)
 {
     m_DisconnectCallback = callback;
-}
-
-void IOPoller::RemoveDescriptor(int socketDescriptor)
-{
-    m_PollDescriptors.erase(std::remove_if(
-        m_PollDescriptors.begin(),
-        m_PollDescriptors.end(),
-        [socketDescriptor](const struct pollfd& pfd) {
-            return pfd.fd == socketDescriptor;
-        }),
-        m_PollDescriptors.end());
 }
