@@ -25,6 +25,6 @@ void WorkerPool::AddClient(const Client &client)
     auto worker = std::min_element(m_Workers.begin(), m_Workers.end(), [](const Worker& a, const Worker& b) {
         return a.GetNumConnectedClients() < b.GetNumConnectedClients();
     });
-    std::printf("Assigning client to worker %d\n", worker->GetPoolIndex());
+    std::printf("[LOG]: Assigning client to worker %d\n", worker->GetPoolIndex());
     worker->AddClient(std::move(client));
 }

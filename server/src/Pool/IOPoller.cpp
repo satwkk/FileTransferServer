@@ -5,20 +5,24 @@
 
 void IOPoller::Poll(std::vector<struct pollfd>& descriptors)
 {
-    int result = poll(descriptors.data(), descriptors.size(), 2000);
+    int result = poll(descriptors.data(), descriptors.size(), 1000);
     for (const auto& fd : descriptors) 
     {
         if (fd.revents & POLLIN)
         {
             // TODO: Decide max message size
             std::string message = SocketIO::RecieveMessageRaw(fd.fd);
-            if (message.size() > 0) 
+            if (message == "__no_data__")
             {
-                m_RecieveCallback(fd.fd, message);
+                continue;
             }
-            else if ((message.size() == 0) || (message.size() < 0 && (errno != EWOULDBLOCK && errno != EAGAIN))) 
+            if (message.empty())
             {
                 m_DisconnectCallback(fd.fd);
+            }
+            else 
+            {
+                m_RecieveCallback(fd.fd, message);
             }
         }
     }

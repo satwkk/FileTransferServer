@@ -1,9 +1,11 @@
 #include "Command.h"
 #include "Commands/ListDirectoryCommand.h"
+#include "Commands/ExitCommand.h"
 #include <unordered_map>
 
 static std::unordered_map<std::string, CommandType> commandMap = {
-    {"ls", LIST_DIRECTORY}
+    {"ls", LIST_DIRECTORY},
+    {"exit", EXIT}
 };
 
 Command::Command(CommandType type, int fd)
@@ -20,6 +22,10 @@ std::unique_ptr<Command> Command::Create(const std::string& name, int fd)
         case LIST_DIRECTORY: 
         {
             return std::make_unique<ListDirectoryCommand>(type, fd);
+        }
+        case EXIT:
+        {
+            return std::make_unique<ExitCommand>(type, fd);
         }
         default: 
         {

@@ -2,6 +2,7 @@
 
 #include <string>
 #include <sys/socket.h>
+#include <unistd.h>
 
 namespace SocketIO 
 {
@@ -27,25 +28,37 @@ namespace SocketIO
     static std::string RecieveMessageRaw(int fd, uint32_t recvSize = 1024)
     {
         std::string response {};
-        try 
+        char buffer[1024];
+        int bytesRead = recv(fd, buffer, sizeof(buffer), 0);
+        if (bytesRead > 0) 
         {
-            char buffer[1024];
-            int bytesRead = recv(fd, buffer, sizeof(buffer), 0);
-            if (bytesRead > 0) 
+            return std::string(buffer, bytesRead);
+        }
+        else if (bytesRead == 0) 
+        {
+            return "";
+        }
+        else 
+        {
+            if (errno == EWOULDBLOCK || errno == EAGAIN) 
             {
-                response = std::string(buffer, bytesRead);
+                return "__no_data__";
             }
-            return response;
+            else 
+            {
+                std::printf("[ERROR]: recv() failed on FD: %d, errono: %d\n", fd, errno);
+                return "";
+            }
         }
-        catch (std::exception& e) 
-        {
-            std::printf("[ERROR]: Error %s while RecieveMessage on FD: %d\n", e.what(), fd);
-        }
-        return std::string{};
     }
 
     static std::string RecieveMessage(int fd, uint32_t recvSize = 1024)
     {
         return GetSafeMessage(RecieveMessageRaw(fd, recvSize));
+    }
+
+    static void Close(int fd)
+    {
+        close(fd);
     }
 }

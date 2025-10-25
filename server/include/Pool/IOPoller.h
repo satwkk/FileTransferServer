@@ -11,7 +11,6 @@ public:
     IOPoller() = default;
     ~IOPoller() = default;
 
-    // void AddDescriptor(const Client& client);
     void Poll(std::vector<struct pollfd>& descriptors);
     void BindRecieveCallback(std::function<void(int, const std::string&)> callback);
     void BindDisconnectCallback(std::function<void(int)> callback);

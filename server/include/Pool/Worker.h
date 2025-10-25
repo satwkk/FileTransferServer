@@ -6,6 +6,8 @@
 #include "Client.h"
 #include "IOPoller.h"
 #include "Containers/EasyArray.h"
+#include <Event/Events.h>
+#include <Handlers/CommandHandler.h>
 
 class Worker 
 {
@@ -22,6 +24,8 @@ public:
     uint32_t GetPoolIndex() const { return m_PoolIndex; }
 
 private:
+    void BindEvents();
+    void UnbindEvents();
     void OnClientDisconnected(int socketDescriptor);
     void OnRecieveCommand(int socketDescriptor, const std::string& command);
 
@@ -30,5 +34,6 @@ private:
     uint32_t m_PoolIndex;
     EasyArray<Client> m_ConnectedClients;
     EasyArray<struct pollfd> m_FileDescriptors;
+    CommandHandler m_CommandHandler;
     IOPoller m_Poller;
 };

@@ -1,16 +1,14 @@
 #pragma once
 #include "Command.h"
+#include <functional>
 
-class CommandHandler 
+class CommandHandler
 {
 public:
-    void HandleCommand(const std::string& name, int fd);
-    static CommandHandler* Get();
+    CommandHandler();
+    ~CommandHandler() = default;
+    void HandleCommand(const std::string& name, int fd, const std::function<void(const std::unique_ptr<Command>& command)>& onComplete);
 
 private:
     std::string GetSafeCommandString(const std::string& input);
-
-private:
-    CommandHandler() = default;
-    ~CommandHandler() = default;
 };

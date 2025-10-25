@@ -39,7 +39,7 @@ Server::~Server()
 
 void Server::Run()
 {
-    std::printf("Server is running on %s:%d\n", m_Host.c_str(), m_Port);
+    std::printf("[SUCCESS]: Server is running on %s:%d\n", m_Host.c_str(), m_Port);
 
     while (m_IsRunning) 
     {

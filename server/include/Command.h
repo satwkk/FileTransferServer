@@ -21,5 +21,5 @@ protected:
 
 protected:
     CommandType m_Type;
-    uint32_t m_InvokerFd;
+    int m_InvokerFd;
 };
