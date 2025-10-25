@@ -8,6 +8,7 @@
 #include "Containers/EasyArray.h"
 #include <Event/Events.h>
 #include <Handlers/CommandHandler.h>
+#include <mutex>
 
 class Worker 
 {
@@ -18,10 +19,11 @@ public:
     void Initialize(uint32_t poolIndex);
     void Cleanup();
     void Update();
-    void AddClient(const Client& client);
 
     inline uint32_t GetNumConnectedClients() const { return m_ConnectedClients.GetSize(); }
     inline uint32_t GetPoolIndex() const { return m_PoolIndex; }
+
+    void OnClientConnected(const Client& client);
 
 private:
     void BindEvents();
@@ -36,4 +38,6 @@ private:
     EasyArray<struct pollfd> m_FileDescriptors;
     CommandHandler m_CommandHandler;
     IOPoller m_Poller;
+    std::mutex m_ClientMutex;
+    std::mutex m_FdMutex;
 };

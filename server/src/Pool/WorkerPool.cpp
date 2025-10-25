@@ -26,5 +26,5 @@ void WorkerPool::AddClient(const Client& client)
         return a.GetNumConnectedClients() < b.GetNumConnectedClients();
     });
     std::printf("[LOG]: Assigning client to worker %d\n", worker->GetPoolIndex());
-    worker->AddClient(std::move(client));
+    worker->OnClientConnected(std::move(client));
 }

@@ -36,10 +36,16 @@ void Worker::Cleanup()
     m_ConnectedClients.Empty();
 }
 
-void Worker::AddClient(const Client& client)
+void Worker::OnClientConnected(const Client& client)
 {
-    m_ConnectedClients.Add(client);
-    m_FileDescriptors.Add({client.SocketDescriptor, POLLIN, 0});
+    {
+        std::lock_guard<std::mutex> lock(m_ClientMutex);
+        m_ConnectedClients.Add(client);
+    }
+    {
+        std::lock_guard<std::mutex> lock(m_FdMutex);
+        m_FileDescriptors.Add({client.SocketDescriptor, POLLIN, 0});
+    }
     SocketIO::SendMessage(client.SocketDescriptor, SERVER_WELCOME_MESSAGE);
     std::printf("[LOG]: Worker %d: New client added. Total clients: %d\n", m_PoolIndex, m_ConnectedClients.GetSize());
 }
@@ -49,13 +55,19 @@ void Worker::OnClientDisconnected(int socketDescriptor)
     std::printf("[LOG]: Worker disconnected on fd: %d\n", socketDescriptor);
     SocketIO::Close(socketDescriptor);
 
-    m_ConnectedClients.Remove([socketDescriptor](const Client& client) {
-        return client.SocketDescriptor == socketDescriptor;
-    });
+    {
+        std::lock_guard<std::mutex> lock(m_ClientMutex);
+        m_ConnectedClients.Remove([socketDescriptor](const Client& client) {
+            return client.SocketDescriptor == socketDescriptor;
+        });
+    }
 
-    m_FileDescriptors.Remove([socketDescriptor](const pollfd& fd) {
-        return fd.fd == socketDescriptor;
-    });
+    {
+        std::lock_guard<std::mutex> lock(m_FdMutex);
+        m_FileDescriptors.Remove([socketDescriptor](const pollfd& fd) {
+            return fd.fd == socketDescriptor;
+        });
+    }
 }
 
 void Worker::OnRecieveCommand(int socketDescriptor, const std::string &command)
@@ -72,6 +84,11 @@ void Worker::Update()
 {
     while (true)
     {
-        m_Poller.Poll(m_FileDescriptors.GetContainer());
+        std::vector<pollfd> fdsCopy;
+        {
+            std::lock_guard<std::mutex> lock(m_FdMutex);
+            fdsCopy = m_FileDescriptors.GetContainer();
+        }
+        m_Poller.Poll(fdsCopy);
     }
 }
