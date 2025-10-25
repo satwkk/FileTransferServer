@@ -33,6 +33,6 @@ CommandType Command::GetCommandTypeFromName(const std::string &name)
     return commandMap.contains(name) ? commandMap[name] : CommandType::NONE;
 }
 
-void Command::Execute() const
+void Command::Execute(std::function<void(int fd, const std::string& response)> onExecuteComplete) const
 {
 }

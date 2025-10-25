@@ -1,6 +1,7 @@
 #include "Pool/IOPoller.h"
 #include <unistd.h>
 #include "Command.h"
+#include "SocketIO.h"
 
 void IOPoller::AddDescriptor(const Client &client)
 {
@@ -15,13 +16,12 @@ void IOPoller::Poll()
         if (fd.revents & POLLIN)
         {
             // TODO: Decide max message size
-            std::vector<char> buf(1024);
-            int bytesRead = recv(fd.fd, buf.data(), buf.size(), 0);
-            if (bytesRead > 0) 
+            std::string message = SocketIO::RecieveMessageRaw(fd.fd);
+            if (message.size() > 0) 
             {
-                m_RecieveCallback(fd.fd, std::string(buf.data(), bytesRead));
+                m_RecieveCallback(fd.fd, message);
             }
-            else if ((bytesRead == 0) || (bytesRead < 0 && (errno != EWOULDBLOCK && errno != EAGAIN))) 
+            else if ((message.size() == 0) || (message.size() < 0 && (errno != EWOULDBLOCK && errno != EAGAIN))) 
             {
                 close(fd.fd);
                 RemoveDescriptor(fd.fd);

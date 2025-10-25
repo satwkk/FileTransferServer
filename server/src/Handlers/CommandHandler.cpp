@@ -1,4 +1,7 @@
 #include "Handlers/CommandHandler.h"
+#include <functional>
+#include <sys/socket.h>
+#include "SocketIO.h"
 
 static CommandHandler* s_Instance = nullptr;
 
@@ -8,7 +11,9 @@ void CommandHandler::HandleCommand(const std::string& name, int fd)
     std::unique_ptr<Command> command = Command::Create(safeCommand, fd);
     if (command)
     {
-        command->Execute();
+        command->Execute([&](int fd, const std::string& response) {
+            SocketIO::SendMessage(fd, response);
+        });
     }
     else 
     {

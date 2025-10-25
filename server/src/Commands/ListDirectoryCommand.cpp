@@ -7,7 +7,7 @@ ListDirectoryCommand::ListDirectoryCommand(CommandType type, int fd)
 {
 }
 
-void ListDirectoryCommand::Execute() const
+void ListDirectoryCommand::Execute(std::function<void(int fd, const std::string& response)> onExecuteComplete) const
 {
     std::string path = ".";
     std::string response = "Directory listing for " + path + ":\n";
@@ -17,5 +17,5 @@ void ListDirectoryCommand::Execute() const
         response += entry.path().filename().string() + "\n";
     }
 
-    send(m_InvokerFd, response.c_str(), response.size(), 0);
+    onExecuteComplete(m_InvokerFd, response);
 }

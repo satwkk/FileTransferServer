@@ -1,8 +1,9 @@
 #include "Pool/Worker.h"
 #include <poll.h>
-#include "Handlers/ClientHandler.h"
 #include "unistd.h"
 #include <Handlers/CommandHandler.h>
+#include "Constants.h"
+#include "SocketIO.h"
 
 void Worker::Initialize(uint32_t poolIndex)
 {
@@ -15,7 +16,7 @@ void Worker::Initialize(uint32_t poolIndex)
 
 void Worker::Cleanup()
 {
-    for (const auto& client : m_ConnectedClients) 
+    for (const Client& client : m_ConnectedClients) 
     {
         close(client.SocketDescriptor);
     }
@@ -26,7 +27,7 @@ void Worker::AddClient(const Client &client)
 {
     m_ConnectedClients.emplace_back(std::move(client));
     m_Poller.AddDescriptor(client);
-    ClientHandler::SendMessage(client, "Welcome to the server!\n");
+    SocketIO::SendMessage(client.SocketDescriptor, SERVER_WELCOME_MESSAGE);
     std::printf("Worker %d: New client added. Total clients: %lu\n", m_PoolIndex, m_ConnectedClients.size());
 }
 
