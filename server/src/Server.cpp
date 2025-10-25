@@ -7,6 +7,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <Event/EventBus.h>
+#include <Event/Events.h>
 
 Server::Server(const std::string& host, int port)
     : m_Port(port)

@@ -19,7 +19,7 @@ WorkerPool::~WorkerPool()
     }
 }
 
-void WorkerPool::AddClient(const Client &client)
+void WorkerPool::AddClient(const Client& client)
 {
     // TODO: Optimize worker selection strategy
     auto worker = std::min_element(m_Workers.begin(), m_Workers.end(), [](const Worker& a, const Worker& b) {

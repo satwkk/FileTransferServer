@@ -14,6 +14,8 @@ void Worker::BindEvents()
 
 void Worker::UnbindEvents() 
 {
+    m_Poller.BindDisconnectCallback(nullptr);
+    m_Poller.BindRecieveCallback(nullptr);
 }
 
 void Worker::Initialize(uint32_t poolIndex)
@@ -34,7 +36,7 @@ void Worker::Cleanup()
     m_ConnectedClients.Empty();
 }
 
-void Worker::AddClient(const Client &client)
+void Worker::AddClient(const Client& client)
 {
     m_ConnectedClients.Add(client);
     m_FileDescriptors.Add({client.SocketDescriptor, POLLIN, 0});

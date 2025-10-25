@@ -20,8 +20,8 @@ public:
     void Update();
     void AddClient(const Client& client);
 
-    uint32_t GetNumConnectedClients() const { return m_ConnectedClients.GetSize(); }
-    uint32_t GetPoolIndex() const { return m_PoolIndex; }
+    inline uint32_t GetNumConnectedClients() const { return m_ConnectedClients.GetSize(); }
+    inline uint32_t GetPoolIndex() const { return m_PoolIndex; }
 
 private:
     void BindEvents();

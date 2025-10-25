@@ -1,13 +1,14 @@
 #include "Commands/ListDirectoryCommand.h"
 #include <filesystem>
 #include <sys/socket.h>
+#include "SocketIO.h"
 
 ListDirectoryCommand::ListDirectoryCommand(CommandType type, int fd)
     : Command::Command(type, fd)
 {
 }
 
-void ListDirectoryCommand::Execute(std::function<void(int fd, const std::string& response)> onExecuteComplete) const
+void ListDirectoryCommand::Execute() const
 {
     std::string path = ".";
     std::string response = "Directory listing for " + path + ":\n";
@@ -17,5 +18,5 @@ void ListDirectoryCommand::Execute(std::function<void(int fd, const std::string&
         response += entry.path().filename().string() + "\n";
     }
 
-    onExecuteComplete(m_InvokerFd, response);
+    SocketIO::SendMessage(m_InvokerFd, response);
 }

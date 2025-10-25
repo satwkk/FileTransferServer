@@ -14,17 +14,13 @@ void CommandHandler::HandleCommand(const std::string& name, int fd, const std::f
     std::unique_ptr<Command> command = Command::Create(safeCommand, fd);
     if (command)
     {
-        command->Execute([&](int fd, const std::string& response) {
-            if (response.size() > 0)
-            {
-                SocketIO::SendMessage(fd, response);
-            }
-            onComplete(command);
-        });
+        command->Execute();
+        onComplete(command);
     }
     else 
     {
-        std::printf("Unknown command\n");
+        SocketIO::SendMessage(fd, "Unknown command\n");
+        std::printf("[WARN]: Unknown command\n");
     }
 }
 

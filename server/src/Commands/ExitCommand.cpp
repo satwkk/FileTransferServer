@@ -7,8 +7,8 @@
 ExitCommand::ExitCommand(CommandType type, int fd) 
     : Command::Command(type, fd) {}
 
-void ExitCommand::Execute(std::function<void(int fd, const std::string &response)> onExecuteComplete) const
+void ExitCommand::Execute() const
 {
-    onExecuteComplete(m_InvokerFd, SERVER_LEAVE_MESSAGE);
+    SocketIO::SendMessage(m_InvokerFd, SERVER_LEAVE_MESSAGE);
     SocketIO::Close(m_InvokerFd);
 }
