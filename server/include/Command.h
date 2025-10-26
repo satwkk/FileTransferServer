@@ -8,7 +8,7 @@
 class Command 
 {
 public:
-    static std::unique_ptr<Command> Create(const std::string& name, int fd);
+    static std::unique_ptr<Command> Create(const std::string& name, const std::vector<std::string>& args, int fd);
     static CommandType GetCommandTypeFromName(const std::string& name);
     virtual ~Command() = default;
     virtual void Execute() const;

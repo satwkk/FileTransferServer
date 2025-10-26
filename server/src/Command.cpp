@@ -1,10 +1,12 @@
 #include "Command.h"
 #include "Commands/ListDirectoryCommand.h"
 #include "Commands/ExitCommand.h"
+#include "Commands/DownloadCommand.h"
 #include <unordered_map>
 
 static std::unordered_map<std::string, CommandType> commandMap = {
     {"ls", LIST_DIRECTORY},
+    {"download", DOWNLOAD},
     {"exit", EXIT}
 };
 
@@ -14,7 +16,7 @@ Command::Command(CommandType type, int fd)
 {
 }
 
-std::unique_ptr<Command> Command::Create(const std::string& name, int fd)
+std::unique_ptr<Command> Command::Create(const std::string& name, const std::vector<std::string>& args, int fd)
 {
     CommandType type = GetCommandTypeFromName(name);
     switch (type)
@@ -26,6 +28,10 @@ std::unique_ptr<Command> Command::Create(const std::string& name, int fd)
         case EXIT:
         {
             return std::make_unique<ExitCommand>(type, fd);
+        }
+        case DOWNLOAD: 
+        {
+            return std::make_unique<DownloadCommand>(type, args, fd);
         }
         default: 
         {
