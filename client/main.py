@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 import cmd
 import socket
-import sys
 
 class Client(cmd.Cmd):
     intro = "Welcome to file transfer client"
