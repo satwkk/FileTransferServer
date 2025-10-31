@@ -1,6 +1,5 @@
 #pragma once
 
-#include <vector>
 #include <thread>
 #include <poll.h>
 #include "Client.h"

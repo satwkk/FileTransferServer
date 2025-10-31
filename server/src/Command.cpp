@@ -2,11 +2,13 @@
 #include "Commands/ListDirectoryCommand.h"
 #include "Commands/ExitCommand.h"
 #include "Commands/DownloadCommand.h"
+#include "Commands/PutFileCommand.h"
 #include <unordered_map>
 
 static std::unordered_map<std::string, CommandType> commandMap = {
     {"ls", LIST_DIRECTORY},
     {"download", DOWNLOAD},
+    {"put", PUT},
     {"exit", EXIT}
 };
 
@@ -32,6 +34,10 @@ std::unique_ptr<Command> Command::Create(const std::string& name, const std::vec
         case DOWNLOAD: 
         {
             return std::make_unique<DownloadCommand>(type, args, fd);
+        }
+        case PUT: 
+        {
+            return std::make_unique<PutFileCommand>(type, args, fd);
         }
         default: 
         {

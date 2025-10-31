@@ -2,9 +2,10 @@
 #include <poll.h>
 #include "unistd.h"
 #include <Handlers/CommandHandler.h>
+#include <typeinfo>
 #include "Constants.h"
 #include "SocketIO.h"
-#include "Event/EventBus.h"
+#include "Command.h"
 
 void Worker::BindEvents() 
 {

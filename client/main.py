@@ -30,6 +30,12 @@ class Client(cmd.Cmd):
 
         with open(arg, 'w') as file:
             file.write(contents)
+    
+    def do_put(self, arg):
+        with open(arg, 'r') as file:
+            lines = file.read()
+            contents = self.send_command(f'put {arg} {lines}')
+            print(contents)
 
     def send_command(self, command):
         self.client_socket.sendall(command.encode())

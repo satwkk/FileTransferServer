@@ -2,8 +2,6 @@
 #include <functional>
 #include <sys/socket.h>
 #include "SocketIO.h"
-#include "Event/EventBus.h"
-#include <numeric>
 #include <vector>
 
 CommandHandler::CommandHandler() 

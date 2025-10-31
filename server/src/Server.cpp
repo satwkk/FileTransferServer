@@ -1,7 +1,5 @@
 #include "Server.h"
-#include <iostream>
 #include "Defines.h"
-#include "Constants.h"
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netinet/in.h>
@@ -24,7 +22,10 @@ Server::Server(const std::string& host, int port)
     serverAddress.sin_addr.s_addr = inet_addr(m_Host.c_str());
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_len = sizeof(serverAddress);
-    
+
+    int enable = 1;
+    setsockopt(m_SocketDescriptor, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int));
+
     int bindRes = bind(m_SocketDescriptor, reinterpret_cast<struct sockaddr*>(&serverAddress), sizeof(serverAddress));
     Check(bindRes != -1, "Failed to bind socket");
 
