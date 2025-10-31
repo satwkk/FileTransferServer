@@ -13,6 +13,7 @@ Server::Server(const std::string& host, int port)
     , m_Host(host)
     , m_IsRunning(false)
     , m_WorkerPool(5)
+    , m_bReuseAddress(1)
 {
     m_SocketDescriptor = socket(AF_INET, SOCK_STREAM, 0);
     Check(m_SocketDescriptor != -1, "Failed to create socket");
@@ -23,8 +24,7 @@ Server::Server(const std::string& host, int port)
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_len = sizeof(serverAddress);
 
-    int enable = 1;
-    setsockopt(m_SocketDescriptor, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int));
+    setsockopt(m_SocketDescriptor, SOL_SOCKET, SO_REUSEADDR, &m_bReuseAddress, sizeof(int));
 
     int bindRes = bind(m_SocketDescriptor, reinterpret_cast<struct sockaddr*>(&serverAddress), sizeof(serverAddress));
     Check(bindRes != -1, "Failed to bind socket");

@@ -18,10 +18,14 @@ void PutFileCommand::Execute() const
     }
 
     const std::string& fileName = m_Args[0];
-    const std::vector<char> stream (m_Args[1].begin(), m_Args[1].end());
 
-    std::printf("Filename: %s\n", fileName.c_str());
-    std::printf("Received bytes: %s\n", stream.data());
+    if (fileName.starts_with("..")) 
+    {
+        SocketIO::SendMessage(m_InvokerFd, "Sus command detected");
+        return;
+    }
+
+    const std::vector<char> stream (m_Args[1].begin(), m_Args[1].end());
 
     std::ofstream fStream(fileName);
     if (fStream.is_open()) 

@@ -28,4 +28,5 @@ private:
     std::vector<Client> m_ClientHandles;
     WorkerPool m_WorkerPool;
     ServerContext m_Context;
+    int m_bReuseAddress;
 };
