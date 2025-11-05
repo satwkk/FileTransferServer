@@ -5,8 +5,13 @@
 
 struct Client 
 {
-    int SocketDescriptor;
+    int SocketDescriptor = INT_MIN;
     struct sockaddr_in Address;
+
+    Client()
+    {
+        SocketDescriptor = INT_MIN;
+    }
 
     Client(int socketDescriptor, struct sockaddr_in address)
     : SocketDescriptor(socketDescriptor)
@@ -16,5 +21,16 @@ struct Client
     {
         SocketDescriptor = -1;
         Address = {};
+    }
+
+    static Client InvalidClient()
+    {
+        Client client {};
+        return client;
+    }
+
+    bool IsValid()
+    {
+        return SocketDescriptor != INT_MIN;
     }
 };

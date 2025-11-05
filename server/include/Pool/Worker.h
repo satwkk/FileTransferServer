@@ -8,6 +8,7 @@
 #include <Event/Events.h>
 #include <Handlers/CommandHandler.h>
 #include <mutex>
+#include <optional>
 
 class Worker 
 {
@@ -29,6 +30,7 @@ private:
     void UnbindEvents();
     void OnClientDisconnected(int socketDescriptor);
     void OnRecieveCommand(int socketDescriptor, const std::string& command);
+    const Client GetClientFromDescriptor(int socketDescriptor);
 
 private:
     std::thread m_Thread;

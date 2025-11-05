@@ -17,6 +17,9 @@ public:
     Server& operator=(const Server&) = delete;
     ~Server();
 
+    static Server* Get();
+    inline const ServerContext& GetState() const { return m_Context; }
+
 public:
     void Run();
 

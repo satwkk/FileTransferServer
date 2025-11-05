@@ -7,6 +7,6 @@ class ListDirectoryCommand : public Command
 {
 public:
     ListDirectoryCommand() = default;
-    ListDirectoryCommand(CommandType type, int fd);
+    ListDirectoryCommand(CommandType type, const Client& client);
     void Execute() const override;
 };

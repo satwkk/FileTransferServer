@@ -6,7 +6,7 @@ class PutFileCommand : public Command
 {
 public:
     PutFileCommand() = default;
-    PutFileCommand(CommandType type, const std::vector<std::string>& args, int fd);
+    PutFileCommand(CommandType type, const std::vector<std::string>& args, const Client& client);
 
     void Execute() const override;
 

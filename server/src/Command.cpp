@@ -12,32 +12,32 @@ static std::unordered_map<std::string, CommandType> commandMap = {
     {"exit", EXIT}
 };
 
-Command::Command(CommandType type, int fd)
+Command::Command(CommandType type, const Client& client)
     : m_Type(type)
-    , m_InvokerFd(fd)
+    , m_InvokerClient(client)
 {
 }
 
-std::unique_ptr<Command> Command::Create(const std::string& name, const std::vector<std::string>& args, int fd)
+std::unique_ptr<Command> Command::Create(const std::string& name, const std::vector<std::string>& args, const Client& client)
 {
     CommandType type = GetCommandTypeFromName(name);
     switch (type)
     {
         case LIST_DIRECTORY: 
         {
-            return std::make_unique<ListDirectoryCommand>(type, fd);
+            return std::make_unique<ListDirectoryCommand>(type, client);
         }
         case EXIT:
         {
-            return std::make_unique<ExitCommand>(type, fd);
+            return std::make_unique<ExitCommand>(type, client);
         }
         case DOWNLOAD: 
         {
-            return std::make_unique<DownloadCommand>(type, args, fd);
+            return std::make_unique<DownloadCommand>(type, args, client);
         }
         case PUT: 
         {
-            return std::make_unique<PutFileCommand>(type, args, fd);
+            return std::make_unique<PutFileCommand>(type, args, client);
         }
         default: 
         {

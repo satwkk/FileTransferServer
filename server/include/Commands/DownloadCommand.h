@@ -6,7 +6,7 @@ class DownloadCommand : public Command
 {
 public:
     DownloadCommand() = default;
-    DownloadCommand(CommandType type, const std::vector<std::string>& args, int fd);
+    DownloadCommand(CommandType type, const std::vector<std::string>& args, const Client& client);
 
     void Execute() const override;
 

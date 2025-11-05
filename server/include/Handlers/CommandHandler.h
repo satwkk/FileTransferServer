@@ -8,6 +8,7 @@ public:
     CommandHandler();
     ~CommandHandler() = default;
     void HandleCommand(const std::string& name, int fd, const std::function<void(const std::unique_ptr<Command>& command)>& onComplete);
+    void HandleCommand(const std::string& name, const Client& client, const std::function<void(const std::unique_ptr<Command>& command)>& onComplete);
     std::vector<std::string> Tokenize(const std::string& rawString);
 
 private:

@@ -3,8 +3,8 @@
 #include <unistd.h>
 #include "SocketIO.h"
 
-PutFileCommand::PutFileCommand(CommandType type, const std::vector<std::string>& args, int fd)
-    : Command::Command(type, fd)
+PutFileCommand::PutFileCommand(CommandType type, const std::vector<std::string>& args, const Client& client)
+    : Command::Command(type, client)
     , m_Args(args)
 {
 }
@@ -13,7 +13,7 @@ void PutFileCommand::Execute() const
 {
     if (m_Args.size() < 2) 
     {
-        SocketIO::SendMessage(m_InvokerFd, "Invalid put command");
+        SocketIO::SendMessage(GetInvoker(), "Invalid put command");
         return;
     }
 
@@ -21,7 +21,7 @@ void PutFileCommand::Execute() const
 
     if (fileName.starts_with("..")) 
     {
-        SocketIO::SendMessage(m_InvokerFd, "Sus command detected");
+        SocketIO::SendMessage(GetInvoker(), "Sus command detected");
         return;
     }
 
@@ -33,6 +33,6 @@ void PutFileCommand::Execute() const
         fStream.write(stream.data(), stream.size());
     }
 
-    SocketIO::SendMessage(m_InvokerFd, "Successfully wrote to disc\n");
+    SocketIO::SendMessage(GetInvoker(), "Successfully wrote to disc\n");
     fStream.close();
 }

@@ -8,6 +8,8 @@
 #include <Event/EventBus.h>
 #include <Event/Events.h>
 
+static Server* s_Instance = nullptr;
+
 Server::Server(const std::string& host, int port)
     : m_Port(port)
     , m_Host(host)
@@ -15,6 +17,8 @@ Server::Server(const std::string& host, int port)
     , m_WorkerPool(5)
     , m_bReuseAddress(1)
 {
+    s_Instance = this;
+
     m_SocketDescriptor = socket(AF_INET, SOCK_STREAM, 0);
     Check(m_SocketDescriptor != -1, "Failed to create socket");
 
@@ -38,6 +42,11 @@ Server::Server(const std::string& host, int port)
 Server::~Server()
 {
     close(m_SocketDescriptor);
+}
+
+Server* Server::Get()
+{
+    return s_Instance;
 }
 
 void Server::Run()

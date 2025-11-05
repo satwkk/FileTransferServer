@@ -3,8 +3,8 @@
 #include <filesystem>
 #include "fstream"
 
-DownloadCommand::DownloadCommand(CommandType type, const std::vector<std::string>& args, int fd)
-    : Command::Command(type, fd)
+DownloadCommand::DownloadCommand(CommandType type, const std::vector<std::string>& args, const Client& client)
+    : Command::Command(type, client)
     , m_Args(args)
 {
 }
@@ -13,7 +13,7 @@ void DownloadCommand::Execute() const
     std::string fileToDownload = m_Args[0];
     if (fileToDownload.size() <= 0) 
     {
-        SocketIO::SendMessage(m_InvokerFd, "No file found of such name");
+        SocketIO::SendMessage(GetInvoker(), "No file found of such name");
         return;
     }
 
@@ -27,7 +27,7 @@ void DownloadCommand::Execute() const
             std::string contents {};
             if (!fileStream.is_open())
             {
-                SocketIO::SendMessage(m_InvokerFd, "Could not open specified file");
+                SocketIO::SendMessage(GetInvoker(), "Could not open specified file");
                 return;
             }
             std::string line {};
@@ -37,7 +37,7 @@ void DownloadCommand::Execute() const
             }
             fileStream.close();
 
-            SocketIO::SendMessage(m_InvokerFd, contents);
+            SocketIO::SendMessage(GetInvoker(), contents);
         }
     }
 }

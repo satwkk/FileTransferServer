@@ -3,12 +3,13 @@
 #include <sys/socket.h>
 #include "SocketIO.h"
 #include <vector>
+#include "Client.h"
 
 CommandHandler::CommandHandler() 
 {
 }
 
-void CommandHandler::HandleCommand(const std::string& name, int fd, const std::function<void(const std::unique_ptr<Command>& command)>& onComplete)
+void CommandHandler::HandleCommand(const std::string& name, const Client& client, const std::function<void(const std::unique_ptr<Command>& command)>& onComplete) 
 {
     std::string safeCommand = GetSafeCommandString(name);
     std::vector<std::string> tokens = Tokenize(safeCommand);
@@ -17,7 +18,7 @@ void CommandHandler::HandleCommand(const std::string& name, int fd, const std::f
     std::string cmd = tokens.front();
     auto it = tokens.begin(); it++;
     std::vector<std::string> args = std::vector<std::string>(it, tokens.end());
-    std::unique_ptr<Command> command = Command::Create(cmd, args, fd);
+    std::unique_ptr<Command> command = Command::Create(cmd, args, client);
     if (command)
     {
         command->Execute();
@@ -25,7 +26,7 @@ void CommandHandler::HandleCommand(const std::string& name, int fd, const std::f
     }
     else 
     {
-        SocketIO::SendMessage(fd, "Unknown command\n");
+        SocketIO::SendMessage(client, "Unknown command\n");
         std::printf("[WARN]: Unknown command\n");
     }
 }

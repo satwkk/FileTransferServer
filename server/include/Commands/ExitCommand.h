@@ -7,6 +7,6 @@ class ExitCommand : public Command
 public:
     ExitCommand() = default;
     ~ExitCommand() = default; 
-    ExitCommand(CommandType type, int fd);
+    ExitCommand(CommandType type, const Client& client);
     void Execute() const override;
 };
