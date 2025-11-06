@@ -4,6 +4,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include "Client.h"
+#include "Logging/Logger.h"
 namespace SocketIO 
 {
     static std::string GetSafeMessage(const std::string& rawMessage)
@@ -21,7 +22,7 @@ namespace SocketIO
         }
         catch (std::exception& e) 
         {
-            std::printf("[ERROR]: Error %s while SendMessage on FD: %d\n", e.what(), client.SocketDescriptor);
+            eLog << "Error " << e.what() << " while SendMessage on FD: " << client.SocketDescriptor << nl;
         }
     }
 
@@ -46,7 +47,7 @@ namespace SocketIO
             }
             else 
             {
-                std::printf("[ERROR]: recv() failed on FD: %d, errono: %d\n", socketDescriptor, errno);
+                eLog << "recv() failed on FD: " << socketDescriptor << ", errno: " << errno << nl;
                 return "";
             }
         }

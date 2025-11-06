@@ -1,5 +1,6 @@
 #include "Pool/WorkerPool.h"
 #include "Pool/WorkerPool.h"
+#include "Logging/Logger.h"
 
 WorkerPool::WorkerPool(uint32_t numWorkers)
     : m_NumWorkers(numWorkers)
@@ -21,10 +22,9 @@ WorkerPool::~WorkerPool()
 
 void WorkerPool::AddClient(const Client& client)
 {
-    // TODO: Optimize worker selection strategy
     auto worker = std::min_element(m_Workers.begin(), m_Workers.end(), [](const Worker& a, const Worker& b) {
         return a.GetNumConnectedClients() < b.GetNumConnectedClients();
     });
-    std::printf("[LOG]: Assigning client to worker %d\n", worker->GetPoolIndex());
+    iLog << "Assigning client to worker: " << worker->GetPoolIndex() << nl;
     worker->OnClientConnected(std::move(client));
 }

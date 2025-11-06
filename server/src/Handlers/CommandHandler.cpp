@@ -4,6 +4,9 @@
 #include "SocketIO.h"
 #include <vector>
 #include "Client.h"
+#include <unordered_set>
+
+static std::unordered_set<char> s_BlacklistCharacters = {'\r', '\n', ';', '|', '&' };
 
 CommandHandler::CommandHandler() 
 {
@@ -27,7 +30,7 @@ void CommandHandler::HandleCommand(const std::string& name, const Client& client
     else 
     {
         SocketIO::SendMessage(client, "Unknown command\n");
-        std::printf("[WARN]: Unknown command\n");
+        wLog << "Unknown command from client: " << client.SocketDescriptor << nl;
     }
 }
 
@@ -57,6 +60,9 @@ std::vector<std::string> CommandHandler::Tokenize(const std::string &rawString)
 std::string CommandHandler::GetSafeCommandString(const std::string &input)
 {
     std::string safeString = input;
-    safeString.erase(safeString.find_last_not_of("\n\r") + 1);
+    auto it = std::remove_if(safeString.begin(), safeString.end(), [](const char ch) {
+        return s_BlacklistCharacters.contains(ch);
+    });
+    safeString.erase(it, safeString.end());
     return safeString;
 }

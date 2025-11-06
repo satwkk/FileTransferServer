@@ -51,7 +51,7 @@ Server* Server::Get()
 
 void Server::Run()
 {
-    std::printf("[SUCCESS]: Server is running on %s:%d\n", m_Host.c_str(), m_Port);
+    iLog << "Server is running on " << m_Host << ":" << m_Port << nl;
 
     while (m_IsRunning) 
     {
@@ -60,7 +60,7 @@ void Server::Run()
         int clientSocketDescriptor = accept(m_SocketDescriptor, reinterpret_cast<sockaddr*>(&clientSocket), &clientSocketLen);
         Assert(clientSocketDescriptor != -1, "Failed to accept client connection");
 
-        std::printf("[SUCCESS]: Client connected from %s:%d\n", inet_ntoa(clientSocket.sin_addr), ntohs(clientSocket.sin_port));
+        iLog << "Client connected from " << std::string(inet_ntoa(clientSocket.sin_addr)) << ":" << ntohs(clientSocket.sin_port) << nl;
         m_WorkerPool.AddClient(Client(clientSocketDescriptor, clientSocket));
     }
 }

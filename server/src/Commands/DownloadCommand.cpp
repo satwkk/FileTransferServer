@@ -21,7 +21,7 @@ void DownloadCommand::Execute() const
     {
         if (entry.path().filename().string() == fileToDownload)
         {
-            std::printf("[LOG]: Found file %s\n", fileToDownload.c_str());
+            dLog << "Found file " << fileToDownload << " requested from client on FD: " << m_InvokerClient.SocketDescriptor << nl;
 
             std::ifstream fileStream(fileToDownload);
             std::string contents {};

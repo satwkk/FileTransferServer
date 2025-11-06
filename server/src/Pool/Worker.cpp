@@ -24,7 +24,7 @@ void Worker::Initialize(uint32_t poolIndex)
     BindEvents();
     m_PoolIndex = poolIndex;
     m_Thread = std::thread(&Worker::Update, this);
-    std::printf("[LOG]: Worker thread created at index: %d\n", m_PoolIndex);
+    iLog << "Worker thread created at index: " << m_PoolIndex << nl;
 }
 
 void Worker::Cleanup()
@@ -48,12 +48,12 @@ void Worker::OnClientConnected(const Client& client)
         m_FileDescriptors.Add({client.SocketDescriptor, POLLIN, 0});
     }
     SocketIO::SendMessage(client, SERVER_WELCOME_MESSAGE);
-    std::printf("[LOG]: Worker %d: New client added. Total clients: %d\n", m_PoolIndex, m_ConnectedClients.GetSize());
+    iLog << "Worker: " << m_PoolIndex << " New Client added. Total clients: " << m_ConnectedClients.GetSize() << nl;
 }
 
 void Worker::OnClientDisconnected(int socketDescriptor)
 {
-    std::printf("[LOG]: Worker disconnected on fd: %d\n", socketDescriptor);
+    iLog << "Client disconnected at fd: " << socketDescriptor << nl;
     auto client = GetClientFromDescriptor(socketDescriptor);
 
     if (client.IsValid()) 
