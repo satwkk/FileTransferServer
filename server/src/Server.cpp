@@ -11,8 +11,8 @@
 static Server* s_Instance = nullptr;
 
 Server::Server(const std::string& host, int port)
-    : m_Port(port)
-    , m_Host(host)
+    : m_Host(host)
+    , m_Port(port)
     , m_IsRunning(false)
     , m_WorkerPool(5)
     , m_bReuseAddress(1)

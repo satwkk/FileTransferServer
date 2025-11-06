@@ -5,7 +5,7 @@
 
 void IOPoller::Poll(std::vector<struct pollfd>& descriptors)
 {
-    int result = poll(descriptors.data(), descriptors.size(), 1000);
+    int _ = poll(descriptors.data(), descriptors.size(), 1000);
     for (const auto& desc : descriptors) 
     {
         if (desc.revents & POLLIN)

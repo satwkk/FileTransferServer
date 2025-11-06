@@ -7,8 +7,9 @@
 class Logger
 {
 public:
-	Logger(std::ostream& outputStream, const std::string& prefix) :
-		m_Stream(outputStream), m_Prefix(prefix)
+	Logger(std::ostream& outputStream, const std::string& prefix) 
+    : m_Prefix(prefix)
+    , m_Stream(outputStream)
 	{
 	}
 
