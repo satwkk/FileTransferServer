@@ -9,6 +9,7 @@
 #include <Handlers/CommandHandler.h>
 #include <mutex>
 #include <optional>
+#include <unordered_map>
 
 class Worker 
 {
@@ -20,7 +21,7 @@ public:
     void Cleanup();
     void Update();
 
-    inline uint32_t GetNumConnectedClients() const { return m_ConnectedClients.GetSize(); }
+    inline uint32_t GetNumConnectedClients() const { return m_ClientMap.size(); }
     inline uint32_t GetPoolIndex() const { return m_PoolIndex; }
 
     void OnClientConnected(const Client& client);
@@ -35,7 +36,7 @@ private:
 private:
     std::thread m_Thread;
     uint32_t m_PoolIndex;
-    EasyArray<Client> m_ConnectedClients;
+    std::unordered_map<int, Client> m_ClientMap;
     EasyArray<struct pollfd> m_FileDescriptors;
     CommandHandler m_CommandHandler;
     IOPoller m_Poller;

@@ -30,25 +30,25 @@ void Worker::Initialize(uint32_t poolIndex)
 void Worker::Cleanup()
 {
     UnbindEvents();
-    for (const Client& client : m_ConnectedClients) 
+    for (auto& kv : m_ClientMap) 
     {
-        close(client.SocketDescriptor);
+        SocketIO::Close(kv.second);
     }
-    m_ConnectedClients.Empty();
+    m_ClientMap.clear();
 }
 
 void Worker::OnClientConnected(const Client& client)
 {
     {
         std::lock_guard<std::mutex> lock(m_ClientMutex);
-        m_ConnectedClients.Add(client);
+        m_ClientMap.insert({client.SocketDescriptor, client});
     }
     {
         std::lock_guard<std::mutex> lock(m_FdMutex);
         m_FileDescriptors.Add({client.SocketDescriptor, POLLIN, 0});
     }
     SocketIO::SendMessage(client, SERVER_WELCOME_MESSAGE);
-    iLog << "Worker: " << m_PoolIndex << " New Client added. Total clients: " << m_ConnectedClients.GetSize() << nl;
+    iLog << "Worker: " << m_PoolIndex << " New Client added. Total clients: " << m_ClientMap.size() << nl;
 }
 
 void Worker::OnClientDisconnected(int socketDescriptor)
@@ -63,9 +63,10 @@ void Worker::OnClientDisconnected(int socketDescriptor)
 
     {
         std::lock_guard<std::mutex> lock(m_ClientMutex);
-        m_ConnectedClients.Remove([socketDescriptor](const Client& client) {
-            return client.SocketDescriptor == socketDescriptor;
-        });
+        if (m_ClientMap.contains(socketDescriptor)) 
+        {
+            m_ClientMap.erase(socketDescriptor);
+        }
     }
 
     {
@@ -81,7 +82,7 @@ void Worker::OnRecieveCommand(int socketDescriptor, const std::string &command)
     auto client = GetClientFromDescriptor(socketDescriptor);
     if (client.IsValid()) 
     {
-        m_CommandHandler.HandleCommand(command, client, [&](const std::unique_ptr<Command>& command) {
+        m_CommandHandler.HandleCommand(command, client, [this, socketDescriptor](const std::unique_ptr<Command>& command) {
             if (command->GetType() == CommandType::EXIT) 
             {
                 OnClientDisconnected(socketDescriptor);
@@ -99,12 +100,9 @@ void Worker::OnRecieveCommand(int socketDescriptor, const std::string &command)
 const Client Worker::GetClientFromDescriptor(int socketDescriptor)
 {
     std::lock_guard<std::mutex> lock(m_ClientMutex);
-    auto client = std::find_if(m_ConnectedClients.begin(), m_ConnectedClients.end(), [socketDescriptor](const Client& client) {
-        return client.SocketDescriptor == socketDescriptor;
-    });
-    if (client != m_ConnectedClients.end()) 
+    if (m_ClientMap.contains(socketDescriptor)) 
     {
-        return *client;
+        return m_ClientMap.at(socketDescriptor);
     }
     return Client::InvalidClient();
 }

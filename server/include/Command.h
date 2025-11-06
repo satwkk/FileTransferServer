@@ -12,7 +12,9 @@ public:
     static std::unique_ptr<Command> Create(const std::string& name, const std::vector<std::string>& args, const Client& client);
     static CommandType GetCommandTypeFromName(const std::string& name);
     virtual ~Command() = default;
-    virtual void Execute() const;
+
+    virtual void Execute() const = 0;
+
     const CommandType GetType() const { return m_Type; }
     const Client& GetInvoker() const { return m_InvokerClient; }
 

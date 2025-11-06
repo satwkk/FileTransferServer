@@ -50,7 +50,3 @@ CommandType Command::GetCommandTypeFromName(const std::string &name)
 {
     return commandMap.contains(name) ? commandMap[name] : CommandType::NONE;
 }
-
-void Command::Execute() const
-{
-}
